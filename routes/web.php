@@ -24,7 +24,27 @@ Route::get('/', function () {
         ->orWhere('content', 'like', "%$postContent%")
         ->get();
 
-        dump($query);
+    // dump($query);
+
+    /* FULLTEXT index */
+
+    /**
+     * Only results which contain this string will be fetched
+     * including the title and the content
+     */
+
+    $searchTerm = 'Deleniti';
+    $query = DB::table('posts')
+        // ->where('title', 'like', "%$searchTerm%")
+        // ->orWhere('content', 'like', "%$searchTerm%")
+        // laravel doesnt support full text searching, write sql query
+        ->whereRaw(
+            "MATCH(title, content) AGAINST(? IN BOOLEAN MODE)",
+            [$searchTerm]
+        )
+        ->get();
+
+    dump($query);
 
     /* query single records in the database */
 
