@@ -10,6 +10,27 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
+    /* query single records in the database */
+
+    $postId = 2;
+
+    // fetches post with comments and all columns
+    $res = Post::with('comments')->find($postId);
+
+    $tagId = 1;
+
+    // $result = Tag::with(['posts' => function ($q) {
+    //     // only fetch the posts with tags and only the id and title columns
+    //     $q->select('posts.id', 'posts.title');
+    // }])->find($tagId);
+
+    $categoryId = 2;
+
+    $result = Category::with(['posts' => function ($q) {
+        // only fetch the posts with tags and only the id and title columns
+        $q->select('posts.id', 'posts.title', 'posts.category_id');
+    }])->find($categoryId);
+
     $categories = Category::select('id', 'title')->orderBy('title')->get();
 
     $mostPopularCategories = Category::select('id', 'title')
@@ -46,12 +67,12 @@ Route::get('/', function () {
 
     $mostActiveUsers = User::select('id', 'name')->orderByDesc(
         Post::selectRaw('count(user_id) as post_count')
-        ->whereColumn('user_id', 'posts.user_id')
-        ->orderBy('post_count', 'desc')
-        ->limit(1)
+            ->whereColumn('user_id', 'posts.user_id')
+            ->orderBy('post_count', 'desc')
+            ->limit(1)
     )->take(5)->withCount('posts')->get();
 
-    dump($mostPopularCategories);
+    dump($result);
 
     return view('welcome');
 });
