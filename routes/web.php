@@ -12,6 +12,11 @@ Route::get('/', function () {
 
     $categories = Category::select('id', 'title')->orderBy('title')->get();
 
+    $mostPopularCategories = Category::select('id', 'title')
+        ->withCount('comments')
+        ->orderBy('comments_count', 'desc')
+        ->take(3)->get();
+
     $tags = Tag::select('id', 'name')->orderByDesc(
         DB::table(
             'post_tag'
@@ -46,7 +51,7 @@ Route::get('/', function () {
         ->limit(1)
     )->take(5)->withCount('posts')->get();
 
-    dump($mostActiveUsers);
+    dump($mostPopularCategories);
 
     return view('welcome');
 });
