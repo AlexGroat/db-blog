@@ -40,7 +40,8 @@ Route::get('/', function () {
       that do not contain the word "maxime" */
 
     $searchTerm = '+nostrum -maxime';
-    $sortBy = 'created_at';
+    // $sortBy = 'updated_at';
+    $sortBy = 'updated_at desc, title asc';
     $query = DB::table('posts')
         // ->where('title', 'like', "%$searchTerm%")
         // ->orWhere('content', 'like', "%$searchTerm%")
@@ -52,9 +53,12 @@ Route::get('/', function () {
             "MATCH(title, content) AGAINST(? IN BOOLEAN MODE)",
             [$searchTerm]
         )
+        ->when($sortBy, function ($q, $sortBy) {
+            return $q->orderByRaw($sortBy);
+        })
         ->get();
 
-    dump($query);
+    Debugbar::info($query);
 
     // /* query single records in the database */
 
