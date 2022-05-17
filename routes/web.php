@@ -10,6 +10,22 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
+    /* search for title and content of post */
+
+    /**
+     * query the posts table where the title and content
+     * contain the values of the variables
+     */
+
+    $postTitle = 'delen';
+    $postContent = 'Est provident';
+    $query = DB::table('posts')
+        ->where('title', 'like', "%$postTitle%")
+        ->orWhere('content', 'like', "%$postContent%")
+        ->get();
+
+        dump($query);
+
     /* query single records in the database */
 
     $postId = 2;
@@ -72,7 +88,7 @@ Route::get('/', function () {
             ->limit(1)
     )->take(5)->withCount('posts')->get();
 
-    dump($result);
+    // dump($query);
 
     return view('welcome');
 });
