@@ -33,7 +33,14 @@ Route::get('/', function () {
      * including the title and the content
      */
 
-    $searchTerm = 'Eligendi';
+    /* MySQL can perform boolean full-text searches using the IN BOOLEAN MODE modifier. With this modifier,
+     certain characters have special meaning at the beginning or end of words in the search string. In the 
+     following query, the + and - operators indicate that a word must be present or absent, respectively,
+      for a match to occur. Thus, the query retrieves all the rows that contain the word "nostrum" but 
+      that do not contain the word "maxime" */
+
+    $searchTerm = '+nostrum -maxime';
+    $sortBy = 'created_at';
     $query = DB::table('posts')
         // ->where('title', 'like', "%$searchTerm%")
         // ->orWhere('content', 'like', "%$searchTerm%")
