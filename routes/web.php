@@ -4,6 +4,7 @@ use App\Models\Post;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -26,11 +27,26 @@ Route::get('/', function () {
 
     $latestPosts = Post::select('id', 'title')->latest()->take(5)->withCount('comments')->get();
 
+    $mostPopularPosts = Post::select('id', 'title')->orderByDesc(
+        Comment::selectRaw('count(post_id) as comment_count')
+            // where post id column is the same as post id on the comments table
+            ->whereColumn('posts.id', 'comments.post_id')
+            ->orderBy('comment_count', 'desc')
+            ->limit(1)
+    )->take(5)->withCount('comments')->get();
+
     $posts = Post::select('id', 'title', 'content')->get();
 
     $comments = Comment::select('id', 'content')->get();
 
-    dump($latestPosts);
+    $mostActiveUsers = User::select('id', 'name')->orderByDesc(
+        Post::selectRaw('count(user_id) as post_count')
+        ->whereColumn('user_id', 'posts.user_id')
+        ->orderBy('post_count', 'desc')
+        ->limit(1)
+    )->take(5)->withCount('posts')->get();
+
+    dump($mostActiveUsers);
 
     return view('welcome');
 });
